@@ -1,50 +1,35 @@
-SUMMARY = "Code pour STM32F407"
-DESCRIPTION = "Compilateur pour STM32F407 avec Makefile"
-LICENSE = "CLOSED"
 
-# Inclure les fichiers du projet
-# Référence au Makefile et autres fichiers nécessaires dans un chemin local
-SRC_URI = "file:///home/besbes/layers/GPIO_IOToggle/Makefile \
-           file:///home/besbes/layers/GPIO_IOToggle/Src/main.c"
+SUMMARY = "STM32F407 Project with Makefile"
+LICENSE = "MIT"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=<checksum>"
 
-# Dépendance pour GCC ARM Embedded
-DEPENDS += "gcc-arm-none-eabi-native"
+# Chemin vers les fichiers source et Makefile
+SRC_URI = "file://Makefile \
+           file://stm32f407.ld \
+           file://startup_stm32f407.s \
+           file://core/src/"
 
-# Spécification du compilateur et du linker
-COMPILER = "${STAGING_DIR_NATIVE}/bin/arm-none-eabi-gcc"
-LINKER = "${STAGING_DIR_NATIVE}/bin/arm-none-eabi-ld"
+# Répertoire de travail pour la compilation
+S = "${WORKDIR}"
 
-# Options de compilation
-EXTRA_CFLAGS = "-mcpu=cortex-m4 -mthumb -g -O2"
+# Héritage du système de build Yocto basé sur Makefile
+inherit build
 
-# Options de linking
-EXTRA_LDFLAGS = "-Tstm32f407.ld"
+# Définir les options spécifiques de compilation
+EXTRA_OEMAKE = ""
 
-S = "${WORKDIR}/src"
-
-# Installation
-do_install() {
-    install -d ${D}${bindir}/code
-    cp -r ${S}/* ${D}${bindir}/code
-}
-
-# Fonction de compilation
+# Cible de compilation
 do_compile() {
-    # Compiler le fichier source en fichier objet
-    ${COMPILER} ${EXTRA_CFLAGS} -c ${S}/main.c -o ${S}/main.o
-
-    # Lier le fichier objet pour créer l'exécutable
-    ${LINKER} ${EXTRA_LDFLAGS} ${S}/main.o -o ${S}/firmware.elf
-
-    # Convertir l'exécutable en binaire
-    arm-none-eabi-objcopy -O binary ${S}/firmware.elf ${S}/firmware.bin
+    # Appel de make
+    oe_runmake
 }
 
-# Produit final
-do_deploy() {
-    install -d ${DEPLOYDIR}
-    cp ${S}/firmware.bin ${DEPLOYDIR}/
+# Cible d'installation
+do_install() {
+    # Installer le binaire généré dans le répertoire de destination
+    install -d ${D}/opt/stm32
+    install -m 0755 ${S}/your_output_binary ${D}/opt/stm32/
 }
 
-# Type d'image : génère un fichier binaire
-IMAGE_FSTYPES = "bin"
+# Déclarer le fichier binaire généré comme artefact
+FILES_${PN} += "/opt/stm32/your_output_binary"

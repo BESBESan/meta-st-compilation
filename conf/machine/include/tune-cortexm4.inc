@@ -1,8 +1,7 @@
-# Tuning pour Cortex-M4
-TUNE_FEATURES_tune-cortexm4 = "arm armv7-m cortexm4"
+# Optimisations pour Cortex-M4
+TUNE_FEATURES_tune-cortexm4 = "armv7-m cortex-m4 thumb"
 TUNE_PKGARCH_tune-cortexm4 = "cortexm4"
-BASE_LIB_tune-cortexm4 = "lib"
+TUNE_ARCH = "arm"
 
-# Options spécifiques au compilateur pour Cortex-M4
-ARM_INSTRUCTION_SET = "thumb"
-TUNE_CCARGS = "-mcpu=cortex-m4 -mthumb"
+# Options du compilateur
+TARGET_CC_ARCH = "-mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard"
